@@ -1,5 +1,7 @@
 (define false #f)
 (define true #t)
+(define (square x)
+  (* x x))
 
 (define (make-table)
   (let ((local-table (list '*table*)))
@@ -37,6 +39,14 @@
 
 (define (attach-tag type-tag contents)
   (cons type-tag contents))
+(define (type-tag datum)
+  (if (pair? datum)
+      (car datum)
+      (error "Bad tagged datum: TYPE-TAG" datum)))
+(define (contents datum)
+  (if (pair? datum)
+      (cdr datum)
+      (error "Bad tagged datum: CONTENTS" datum)))
 
 (define (install-rectangular-package)
   (define (real-part z) (car z))
@@ -103,5 +113,9 @@
 
 (install-rectangular-package)
 (install-polar-package)
-(make-from-real-imag 3 4)
+(define ass (make-from-real-imag 3 6))
+(real-part1 ass)
+(imag-part1 ass)
+(magnitude1 ass)
+(angle1 ass)
 
