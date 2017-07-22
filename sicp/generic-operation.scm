@@ -186,17 +186,17 @@
   (define (make-from-mag-ang r a)
     ((get 'make-from-mag-ang 'polar) r a))
   (define (add-complex z1 z2)
-    (make-from-real-imag (+ (real-part z1) (real-part z2))
-                         (+ (imag-part z1) (imag-part z2))))
+    (make-from-real-imag (+ (real-part1 z1) (real-part1 z2))
+                         (+ (imag-part1 z1) (imag-part1 z2))))
   (define (sub-complex z1 z2)
-    (make-from-real-imag (- (real-part z1) (real-part z2))
-                         (- (imag-part z1) (imag-part z2))))
+    (make-from-real-imag (- (real-part1 z1) (real-part1 z2))
+                         (- (imag-part1 z1) (imag-part1 z2))))
   (define (mul-complex z1 z2)
-    (make-from-mag-ang (* (magnitude z1) (magnitude z2))
-                       (+ (angle z1) (angle z2))))
+    (make-from-mag-ang (* (magnitude1 z1) (magnitude1 z2))
+                       (+ (angle1 z1) (angle1 z2))))
   (define (div-complex z1 z2)
-    (make-from-mag-ang (/ (magnitude z1) (magnitude z2))
-                       (- (angle z1) (angle z2))))
+    (make-from-mag-ang (/ (magnitude1 z1) (magnitude1 z2))
+                       (- (angle1 z1) (angle1 z2))))
   (define (tag z) (attach-tag 'complex z))
   (put 'add '(complex complex)
        (lambda (z1 z2) (tag (add-complex z1 z2))))
@@ -210,10 +210,10 @@
        (lambda (x y) (tag (make-from-real-imag x y))))
   (put 'make-from-mag-ang 'complex
        (lambda (r a) (tag (make-from-mag-ang r a))))
-  (put 'real-part '(complex) real-part)
-  (put 'imag-part '(complex) imag-part)
-  (put 'magnitude '(complex) magnitude)
-  (put 'angle '(complex) angle)
+  (put 'real-part '(complex) real-part1)
+  (put 'imag-part '(complex) imag-part1)
+  (put 'magnitude '(complex) magnitude1)
+  (put 'angle '(complex) angle1)
   'done)
 
 (define (make-complex-from-real-imag x y)
@@ -227,12 +227,8 @@
 (define (mul x y) (apply-generic 'mul x y))
 (define (div x y) (apply-generic 'div x y))
 
-
-
-
-
-
-
-
-
-
+(install-scheme-number-package)
+(install-rational-package)
+(install-complex-package)
+(define z (make-complex-from-real-imag 3 4))
+(magnitude1 z)
