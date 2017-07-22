@@ -212,7 +212,7 @@
        (lambda (r a) (tag (make-from-mag-ang r a))))
   (put 'real-part '(complex) real-part)
   (put 'imag-part '(complex) imag-part)
-  (put 'magnitude '(complex) magnituede)
+  (put 'magnitude '(complex) magnitude)
   (put 'angle '(complex) angle)
   'done)
 
