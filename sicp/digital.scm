@@ -29,6 +29,16 @@
 (define (add-action! wire action-procedure)
   ((wire 'add-action!) action-procedure))
 
+(define (logical-or x y)
+  (if (or (= x 1) (= y 1))
+      1
+      0))
+
+(define (logical-not s)
+  (cond ((= s 0) 1)
+        ((= s 1) 0)
+        (else (error "Invalid signal" s))))
+
 (define (inverter input output)
   (define (invert-input)
     (let ((new-value (logical-not (get-signal input))))
@@ -37,11 +47,6 @@
                      (set-signal! output new-value)))))
   (add-action! input invert-input)
   'ok)
-
-(define (logical-not s)
-  (cond ((= s 0) 1)
-        ((= s 1) 0)
-        (else (error "Invalid signal" s))))
 
 (define (and-gate a1 a2 output)
   (define (and-action-procedure)
@@ -54,6 +59,16 @@
   (add-action! a2 and-action-procedure)
   'ok)
 
+(define (or-gate input-1 input-2 output)
+  (define (or-action-procedure)
+    (let ((new-value
+           (logical-or (get-signal input-1) (get-signal input-2))))
+      (after-delay or-gate-delay
+                   (lambda ()
+                     (set-signal! output new-value)))))
+  (add-action! input-1 or-action-procedure)
+  (add-action! input-2 or-action-procedure)
+  'ok)
 
 
 (define a (make-wire))
