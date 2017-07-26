@@ -169,6 +169,7 @@
 (probe "Fahrenheit temp" F)
 
 (set-value! C 25 'user)
+(set-value! F 212 'user)
 
 (forget-value! C 'user)
 (set-value! F 212 'user)
