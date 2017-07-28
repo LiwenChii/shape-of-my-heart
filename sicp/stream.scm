@@ -13,7 +13,7 @@
         ((divides? test-divisor n) test-divisor)
         (else (find-divisor n (+ test-divisor 1)))))
 (define (divides? a b) (= (remainder b a) 0))
-(define (divides? a b) (= (remainder b a) 0))
+(define (divisible? x y) (= (remainder x y) 0))
 (define (prime? n)
   (= n (smallest-divisor n)))
 
@@ -106,3 +106,19 @@
                  (stream-enumerate-interval 1000000 100000000))))
 
 (car (cdr (filter prime? (enumerate-interval 1000000 100000000))))
+
+(define (integers-starting-from n)
+  (cons-stream n (integers-starting-from (+ n 1))))
+(define integers (integers-starting-from 1))
+
+(define no-sevens
+  (stream-filter (lambda (x) (not (divisible? x 7)))
+                 integers))
+
+(stream-ref no-sevens 100)
+
+(define (fibgen a b)
+  (cons-stream a (fibgen b (+ a b))))
+(define fibs (fibgen 0 1))
+
+(stream-ref fibs 5)
