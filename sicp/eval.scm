@@ -51,7 +51,14 @@ e
   (cons 'lambda (cons parameters body)))
 
 
+;;;;;;;;;;;;;;
+(define (true? x) (not (eq? x false)))
+(define (false? x) (eq? x false))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
 (define (definition? exp) (tagged-list? exp 'define))
 (define (definition-variable exp)
   (if (symbol? (cadr exp))
