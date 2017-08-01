@@ -1,4 +1,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
+(define true #t)
+(define false #f)
 (define a 1)
 (define (self-evaluating? exp)
   (cond ((number? exp) #t)
@@ -118,16 +120,6 @@ e
             (else (scan (cdr vars) (cdr vals)))))
     (scan (frame-variables frame)
           (frame-values frame))))
-
-(define (setup-environment)
-  (let ((initial-env
-         (extend-environment (primitive-procedure-names)
-                             (primitive-procedure-objects)
-                             the-empty-environment)))
-    (define-variable! 'true true initial-env)
-    (define-variable! 'false false initial-env)
-    initial-env))
-(define the-global-environment (setup-environment))
 (define (primitive-procedure? proc)
   (tagged-list? proc 'primitive))
 (define (primitive-implementation proc) (cadr proc))
@@ -137,6 +129,7 @@ e
         (list 'cons cons)
         (list 'null? null?)
         ))
+
 
 (define (primitive-procedure-names)
   (map car
@@ -148,12 +141,24 @@ e
   (apply-in-underlying-scheme
    (primitive-implementation proc) args))
 
+(define (setup-environment)
+  (let ((initial-env
+         (extend-environment (primitive-procedure-names)
+                             (primitive-procedure-objects)
+                             the-empty-environment)))
+    (define-variable! 'true true initial-env)
+    (define-variable! 'false false initial-env)
+    initial-env))
+(define the-global-environment (setup-environment))
+
+
+
 (define input-prompt ";;; M-Eval input:")
 (define output-prompt ";;; M-Eval value:")
 (define (driver-loop)
   (prompt-for-input input-prompt)
   (let ((input (read)))
-    (let ((output (eval input the-global-environment)))
+    (let ((output (eval1 input the-global-environment)))
       (announce-output output-prompt)
       (user-print output)))
   (driver-loop))
@@ -196,39 +201,51 @@ e
 (definition? e)
 (definition-value e)
 
+(define (if? exp) (tagged-list? exp 'if))
+(define (if-predicate exp) (cadr exp))
+(define (if-consequent exp) (caddr exp))
+(define (if-alternative exp)
+  (if (not (null? (caddr exp)))
+      (cadddr exp)
+      'false))
 
+(define (begin? exp) (tagged-list? exp 'begin))
+(define (begin-actions exp) (cdr exp))
+(define (last-exp? seq) (null? (cdr seq)))
+(define (first-exp seq) (car seq))
+(define (rest-exps seq) (cdr seq))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (define (list-of-values exps env)
   (if (no-operands? exps)
       '()
-      (cons (eval (first-operand exps) env)
+      (cons (eval1 (first-operand exps) env)
             (list-of-values (rest-operands exps) env))))
 
 (define (eval-if exp env)
-  (if (true? (eval (if-predicate exp) env))
-      (eval (if-consequent exp) env)
-      (eval (if-alternative exp) env)))
+  (if (true? (eval1 (if-predicate exp) env))
+      (eval1 (if-consequent exp) env)
+      (eval1 (if-alternative exp) env)))
 
 (define (eval-sequence exps env)
   (cond ((lasst-exp? exps)
-         (eval (first-exp exps) env))
+         (eval1 (first-exp exps) env))
         (else
-         (eval (first-exp exps) env)
+         (eval1 (first-exp exps) env)
          (eval-sequence (rest-exps exps) env))))
 
 (define (eval-assignment exp env)
   (set-variable-value! (assignment-variable exp)
-                       (eval (assignment-value exp) env)
+                       (eval1 (assignment-value exp) env)
                        env)
   'ok)
 
 (define (eval-definition exp env)
   (define-variable! (definition-variable exp)
-    (eval (definition-value exp) env)
+    (eval1 (definition-value exp) env)
     env)
   'ok)
 
-(define (apply procedure arguments)
+(define (apply1 procedure arguments)
   (cond ((primitive-procedure? procedure)
          (apply-primitive-procedure procedure arguments))
         ((compound-procedure? procedure)
@@ -242,7 +259,7 @@ e
          (error
           "Unknown procedure type: APPLY" procedure))))
 
-(define (eval exp env)
+(define (eval1 exp env)
   (cond ((self-evaluating? exp) exp)
         ((variable? exp) (lookup-variable-value exp env))
         ((quoted? exp) (text-of-quotation exp))
@@ -254,15 +271,15 @@ e
                                        env))
         ((begin? exp)
          (eval-sequence (begin-actions exp) env))
-        ((cond? exp) (eval (cond->if exp) env))
+        ((cond? exp) (eval1 (cond->if exp) env))
         ((application? exp)
-         (apply (eval (operator exp) env)
+         (apply1 (eval1 (operator exp) env)
                 (list-of-values (operands exp) env)))
         (else
          (error "Unknown expression type: EVAL" exp))))
 
 
-
+(driver-loop)
 
 
 
