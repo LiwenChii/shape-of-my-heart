@@ -214,6 +214,9 @@ e
 (define (last-exp? seq) (null? (cdr seq)))
 (define (first-exp seq) (car seq))
 (define (rest-exps seq) (cdr seq))
+
+(define (cond? exp) (tagged-list? exp 'cond))
+(define (cond-clauses exp) (cdr exp))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (define (list-of-values exps env)
   (if (no-operands? exps)
