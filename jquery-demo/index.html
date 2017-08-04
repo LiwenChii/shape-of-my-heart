@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      .xxx{
+        border: 1px solid black;
+        height: 100px;
+        background: red;
+      }
+
+      .active{
+        background: green;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- <div id="xxx" style="height: 100px; background: red"></div> -->
+    <div class="xxx">
+      <p>div test 1</p>
+    </div>
+    <div class="xxx">
+      <p>div test 2
+        <span>span test1</span>  
+      </p>
+      
+    </div>
+    
+  </body>
+  <script src="./jquery.js"></script>
+  <script>
+    var $xxx = $(".xxx")
+    
+    var $p = $xxx.find('p').find('span')
+    console.log($p)
+    console.log($p.end())
+    $p.on('click', function () {
+      console.log('clicked')
+    })
+  </script>
+</html>
